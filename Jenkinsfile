@@ -29,6 +29,9 @@ pipeline {
                     }
                     steps {
                     echo "Test stage"
+                    sh """
+                    (ls ./build/index.html >> /dev/null 2>&1 && echo 'index.html' file exist!) || echo 'index.html' file DON'T EXIST!
+                    """
                     }
                 }
     }

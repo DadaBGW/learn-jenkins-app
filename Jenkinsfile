@@ -50,7 +50,8 @@ pipeline {
                     steps {
                         echo "Test stage"
                         sh """
-                            npm i -g npm@latest
+                            npm cache verify
+                            npm cache clean -force
                             npm install serve
                             node_modules/.bin/serve -s build &
                             sleep 10

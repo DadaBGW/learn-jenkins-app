@@ -6,24 +6,24 @@ pipeline {
         /*
         multiline comment
         */
-//         stage('Build') {
-//             agent {
-//                 docker {
-//                     image 'node:18-alpine'
-//                     reuseNode true
-//                 }
-//             }
-//             steps {
-//                 sh '''
-//                     ls -la
-//                     node --version
-//                     npm --version
-//                     npm ci
-//                     npm run build
-//                     ls -la
-//                 '''
-//             }
-//         }
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
+                '''
+            }
+        }
 
         stage('Run Tests'){
             parallel {
@@ -38,7 +38,6 @@ pipeline {
                         sh """
                         echo Test stage
                         (ls ./build/index.html >> /dev/null 2>&1 && echo 'index.html' file exist!) || echo 'index.html' file DOES NOT EXIST!
-                        npm install
                         npm test
                         """
                     }

@@ -50,7 +50,7 @@ pipeline {
                     steps {
                         echo "Test stage"
                         sh """
-                            npm install serve
+                            npm install serve --verbose
                             node_modules/.bin/serve -s build &
                             sleep 10
                             npx playwright test

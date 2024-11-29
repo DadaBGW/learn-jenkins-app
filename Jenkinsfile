@@ -52,6 +52,8 @@ pipeline {
                         sh """
                             npm cache verify
                             npm cache clean -force
+                            rm -rf node_modules
+                            rm package-lock.json
                             npm install serve
                             node_modules/.bin/serve -s build &
                             sleep 10

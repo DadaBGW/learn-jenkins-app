@@ -64,6 +64,7 @@ pipeline {
 //                             sleep 10
 //                             npx playwright test
 //                         """
+                    }
                     post {
                         always {
                             echo "E2E post action"

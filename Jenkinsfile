@@ -38,7 +38,7 @@ pipeline {
                         echo "Test stage"
                         sh """
                         (ls ./build/index.html >> /dev/null 2>&1 && echo 'index.html' file exist!) || echo 'index.html' file DOES NOT EXIST!
-                        "npm test"
+                        npm test
                         """
                     }
                 }

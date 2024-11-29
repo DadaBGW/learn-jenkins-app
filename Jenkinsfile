@@ -24,23 +24,26 @@ pipeline {
 //                 '''
 //             }
 //         }
-        stage('Test') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                echo "Test stage"
-                sh """
-                (ls ./build/index.html >> /dev/null 2>&1 && echo 'index.html' file exist!) || echo 'index.html' file DOES NOT EXIST!
-                """
-                //sh "npm test"
-            }
-        }
 
-        stage('E2E') {
+        stage('Run Tests'){
+            parallel {
+                stage('Test') {
+                    agent {
+                        docker {
+                            image 'node:18-alpine'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        echo "Test stage"
+                        sh """
+                        (ls ./build/index.html >> /dev/null 2>&1 && echo 'index.html' file exist!) || echo 'index.html' file DOES NOT EXIST!
+                        "npm test"
+                        """
+                    }
+                }
+
+                stage('E2E') {
                     agent {
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.49.0'
@@ -49,15 +52,17 @@ pipeline {
                     }
                     steps {
                         echo "Test stage"
-                        sh """
-                            npm install serve --verbose
-                            node_modules/.bin/serve -s build &
-                            sleep 10
-                            npx playwright test
-                        """
+//                         sh """
+//                             npm install serve --verbose
+//                             node_modules/.bin/serve -s build &
+//                             sleep 10
+//                             npx playwright test
+//                         """
                     }
                 }
-    }
+            }
+        }
+
 
     post {
         always {

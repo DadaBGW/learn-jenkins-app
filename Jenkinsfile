@@ -38,6 +38,8 @@ pipeline {
                         sh """
                         echo Test stage
                         (ls ./build/index.html >> /dev/null 2>&1 && echo 'index.html' file exist!) || echo 'index.html' file DOES NOT EXIST!
+                        rm -rf node_modules
+                        npm install
                         npm test
                         """
                     }

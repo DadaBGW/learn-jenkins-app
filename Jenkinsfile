@@ -2,10 +2,7 @@ pipeline {
     agent any
 
     stages {
-        //Comment
-        /*
-        multiline comment
-        */
+
         stage('Build') {
             agent {
                 docker {
@@ -25,28 +22,25 @@ pipeline {
             }
         }
 
-        stage('Run Tests'){
+        stage('Tests') {
             parallel {
-                stage('Test') {
+                stage('Unit tests') {
                     agent {
                         docker {
                             image 'node:18-alpine'
-                            // reuseNode true
+                            reuseNode true
                         }
                     }
-                    steps {
-                        sh """
-                        echo Test stage
-                        (ls ./build/index.html >> /dev/null 2>&1 && echo 'index.html' file exist!) || echo 'index.html' file DOES NOT EXIST!
-                        rm -rf node_modules
-                        npm install
-                        npm test
-                        """
-                    }
 
+                    steps {
+                        sh '''
+                            #test -f build/index.html
+                            npm test
+                        '''
+                    }
                     post {
                         always {
-                            junit 'test-results/junit.xml'
+                            junit 'jest-results/junit.xml'
                         }
                     }
                 }
@@ -54,25 +48,41 @@ pipeline {
                 stage('E2E') {
                     agent {
                         docker {
-                            image 'mcr.microsoft.com/playwright:v1.49.0'
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                             reuseNode true
                         }
                     }
+
                     steps {
-                        echo "Test stage"
-//                         sh """
-//                             npm install serve --verbose
-//                             node_modules/.bin/serve -s build &
-//                             sleep 10
-//                             npx playwright test
-//                         """
+                        sh '''
+                            npm install serve
+                            node_modules/.bin/serve -s build &
+                            sleep 10
+                            npx playwright test  --reporter=html
+                        '''
                     }
+
                     post {
                         always {
-                            echo "E2E post action"
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
                 }
+            }
+        }
+
+        stage('Deploy') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    npm install netlify-cli
+                    node_modules/.bin/netlify --version
+                '''
             }
         }
     }

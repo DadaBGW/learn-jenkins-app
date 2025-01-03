@@ -30,7 +30,7 @@ pipeline {
 
                     npm --version
 
-                    DIRECTORY_BASE=”$(pwd)”
+                    DIRECTORY_BASE=$(pwd)
                     find “$DIRECTORY_BASE” -name “node_modules” -type d -prune -exec rm -rf ‘{}’ +
 
                     npm ci

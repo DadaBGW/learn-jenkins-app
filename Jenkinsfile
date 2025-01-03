@@ -30,8 +30,6 @@ pipeline {
 
                     npm --version
 
-                    rm /node_modules
-
                     npm ci
 
                     npm run build
